@@ -1,0 +1,5 @@
+<launch>
+	<node  pkg="basic_feature"  type="game"  name="game"  output="screen">
+		<param  name="chatter_name"  type="str"  value="chatter"/>
+    </node>
+</launch>
