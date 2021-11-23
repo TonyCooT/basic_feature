@@ -14,3 +14,7 @@
 ```lang-bash
   rosservice call /check_step "step: 0"
 ```
+
+## Примеры работы / Examples
+
+![](https://github.com/TonyCooT/basic_feature/blob/main/images/example.jpg)
