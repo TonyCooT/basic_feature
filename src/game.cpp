@@ -1,15 +1,16 @@
 #include "ros/ros.h"
 #include "std_msgs/Int8.h"
 #include "basic_feature/check_step.h"
-#include <cstdlib>  // rand() & RAND_MAX
+#include <cstdlib>  // rand(), srand()
 #include <ctime>    // time()
+#include <string>   // to_string()
 
 const int STEP_COUNT = 18;
 
 static ros::Publisher g_pub;
 static bool g_is_dead = false;
 
-bool check(basic_feature::check_step::Request& req, basic_feature::check_step::Response& res);
+bool isChecked(basic_feature::check_step::Request& req, basic_feature::check_step::Response& res);
 void chatterCallback(const std_msgs::Int8& msg);
 int rightStep();
 
@@ -17,15 +18,16 @@ int main(int argc, char **argv)
 {
     ros::init(argc, argv, "check_step_server");
     ros::NodeHandle n;
+	
+    std::string topic_name, service_name;
+    n.param<std::string>("topic_name", topic_name, "chatter");
+    n.param<std::string>("service_name", service_name, "check_step");
     
-    std::string chatter_name;
-    ros::param::param<std::string>("~chatter_name", chatter_name, "chatter");
+    ros::ServiceServer service = n.advertiseService(service_name, isChecked);
+    g_pub = n.advertise<std_msgs::Int8>(topic_name, 10);
+    ros::Subscriber sub = n.subscribe(topic_name, 10, chatterCallback);     
     
-    ros::ServiceServer service = n.advertiseService("check_step", check);
-    g_pub = n.advertise<std_msgs::Int8>(chatter_name, 10);
-    ros::Subscriber sub = n.subscribe(chatter_name, 10, chatterCallback);     
-    
-    srand(time(0));
+    std::srand(std::time(0));
     ROS_INFO("Ready to play the game, please enter 0 or 1 \n");
     
     while(ros::ok())
@@ -38,7 +40,7 @@ int main(int argc, char **argv)
     return 0;
 }
 
-bool check(basic_feature::check_step::Request& req, basic_feature::check_step::Response& res)
+bool isChecked(basic_feature::check_step::Request& req, basic_feature::check_step::Response& res)
 {
     if (req.step != 0 && req.step != 1)
     {
@@ -80,12 +82,5 @@ void chatterCallback(const std_msgs::Int8& msg)
 
 int rightStep()
 {
-    int num = int((double(rand()) / RAND_MAX) * 100.0);
-    
-    if (num < 50)
-        return 0;
-    else
-        return 1;
-    
-    return -1;
+    return (std::rand() % 2);
 }

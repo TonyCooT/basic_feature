@@ -1,5 +1,9 @@
 <launch>
+    <arg name="topic" default="chatter"/>
+    <arg name="service" default="check_step"/>
+
     <node  pkg="basic_feature"  type="game"  name="game"  output="screen">
-        <param  name="chatter_name"  type="str"  value="chatter"/>
+        <param name = "topic_name"  type = "str"    value = "$(arg topic)"/>
+        <param name = "service_name"    type = "str"    value = "$(arg service)"/>
     </node>
 </launch>
